@@ -6,17 +6,23 @@ const {
   createTour,
   getTour,
   updateTour,
-  deleteTour
-} = require('./../controllers/tourController');
+  deleteTour,
+  checkID,
+  checkBody
+} = require('../controllers/tourController');
 
 const router = express.Router();
+
+// parameter middleware run through middleware checks id valid
+router.param('id', checkID);
 
 /////////////////////////////////////////////////////////////////////////////////// ROUTES
 
 router
   .route('/')
   .get(getAllTours)
-  .post(createTour);
+  // checks body properties before creating tour like access rights over if user is logged in
+  .post(checkBody, createTour);
 
 router
   .route('/:id')

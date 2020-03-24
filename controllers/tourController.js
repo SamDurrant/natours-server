@@ -5,6 +5,34 @@ const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/../dev-data/data/tours-simple.json`)
 );
 
+// middleware to check for valid id
+exports.checkID = (req, res, next, val) => {
+  // get tour with matching id
+  const tour = tours.find(el => el.id === req.params.id);
+
+  // check if tour is undefined
+  if (!tour) {
+    return res.status(404).json({
+      status: 'Fail',
+      message: 'Invalid ID'
+    });
+  }
+
+  next();
+};
+
+// middle to check for name or price in res body
+exports.checkBody = (req, res, next) => {
+  // if neither is present, return with error response
+  if (!req.body.name || !req.body.price) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'missing name or price'
+    });
+  }
+  next();
+};
+
 /////////////////////////////////////////////////////////////////////////////////// ROUTE HANDLERS/CONTROLLERS
 
 exports.getAllTours = (req, res) => {
@@ -18,18 +46,8 @@ exports.getAllTours = (req, res) => {
 };
 
 exports.getTour = (req, res) => {
-  // change parameter of id to number
-  const id = Number(req.params.id);
   // get tour with matching id
-  const tour = tours.find(tour => tour.id === id);
-
-  // check if tour is undefined
-  if (!tour) {
-    return res.status(404).json({
-      status: 'Fail',
-      message: 'Invalid ID'
-    });
-  }
+  const tour = tours.find(el => el.id === req.params.id);
 
   // return tour to client
   res.status(200).json({
@@ -68,10 +86,8 @@ exports.createTour = (req, res) => {
 };
 
 exports.updateTour = (req, res) => {
-  // change parameter of id to number
-  const id = Number(req.params.id);
   // get tour with matching id
-  const tour = tours.find(tour => tour.id === id);
+  const tour = tours.find(el => el.id === req.params.id);
 
   // check if tour is undefined
   if (!tour) {
@@ -92,19 +108,6 @@ exports.updateTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  // change parameter of id to number
-  const id = Number(req.params.id);
-  // get tour with matching id
-  const tour = tours.find(tour => tour.id === id);
-
-  // check if tour is undefined
-  if (!tour) {
-    return res.status(404).json({
-      status: 'fail',
-      message: 'Invalid  ID'
-    });
-  }
-
   // return success to client
   res.status(204).json({
     data: null

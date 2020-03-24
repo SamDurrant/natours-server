@@ -9,11 +9,15 @@ const app = express();
 
 /////////////////////////////////////////////////////////////////////////////////// MIDDLEWARE
 
-// returns HTTP method, URL, status code, time to send response back, size of response in bytes
-app.use(morgan('dev'));
-
+// checks  if we are in development before using middleware
+if (process.env.NODE_ENV === 'development') {
+  // returns HTTP method, URL, status code, time to send response back, size of response in bytes
+  app.use(morgan('dev'));
+}
 // middleware allows us to use body
 app.use(express.json());
+// allows use of file system
+app.use(express.static(`${__dirname}/public`));
 
 app.use((req, res, next) => {
   console.log('hello from the other side');
@@ -36,6 +40,23 @@ app.use('/api/v1/users', userRouter);
 module.exports = app;
 
 /*
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 ////////// this is the routes before refactoring
